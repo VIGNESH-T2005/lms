@@ -17,6 +17,22 @@ public class LmsController {
         this.lmsService = lmsService;
     }
 
+    @PostMapping("/auth/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+        return lmsService.register(request);
+    }
+
+    @PostMapping("/auth/login")
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        return lmsService.login(request);
+    }
+
+    @GetMapping("/auth/me")
+    public AuthResponse me(@RequestHeader("X-Auth-Token") String token) {
+        return lmsService.me(token);
+    }
+
     @GetMapping("/dashboard/stats")
     public DashboardStatsResponse getDashboardStats() {
         return lmsService.getDashboardStats();
@@ -78,5 +94,30 @@ public class LmsController {
     @ResponseStatus(HttpStatus.CREATED)
     public SubmissionResponse createSubmission(@Valid @RequestBody SubmissionRequest request) {
         return lmsService.createOrUpdateSubmission(request);
+    }
+
+    @GetMapping("/attendance")
+    public List<AttendanceResponse> getAttendance(
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) Long courseId
+    ) {
+        return lmsService.getAttendance(studentId, courseId);
+    }
+
+    @PostMapping("/attendance")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AttendanceResponse markAttendance(@Valid @RequestBody AttendanceRequest request) {
+        return lmsService.markAttendance(request);
+    }
+
+    @GetMapping("/certifications")
+    public List<CertificationResponse> getCertifications(@RequestParam(required = false) Long studentId) {
+        return lmsService.getCertifications(studentId);
+    }
+
+    @PostMapping("/certifications")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CertificationResponse issueCertification(@Valid @RequestBody CertificationRequest request) {
+        return lmsService.issueCertification(request);
     }
 }
