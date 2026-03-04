@@ -1,95 +1,90 @@
-# Full LMS Website (Spring Boot + React + MySQL)
+# Advanced LMS Platform (Spring Boot + React + MySQL)
 
-This repository contains a complete Learning Management System with:
-- **Backend**: Java 17, Spring Boot, Spring Data JPA, MySQL
-- **Frontend**: React (Vite)
+A production-style Learning Management System with analytics, assignment planning, grading workflows, and full-stack containerized deployment.
+
+## Stack
+- **Backend**: Java 17, Spring Boot 3, Spring Data JPA, Validation
+- **Frontend**: React 18 + Vite
 - **Database**: MySQL 8
-- **Orchestration**: Docker Compose
+- **DevOps**: Docker + Docker Compose
 
-## Features
-- Manage students
-- Manage courses
-- Enroll students in courses
-- View enrollment records
-- Seed sample students and courses on first run
+## Advanced Features
+- Student and course management with search filters
+- Enrollment workflow with duplicate enrollment protection
+- Assignment planner (publish assignment per course with due date and max score)
+- Submission + grading workflow (create/update submission scores)
+- Validation rule: students can submit only when enrolled in the assignment course
+- Dashboard analytics endpoint and UI cards:
+  - total students/courses/enrollments/assignments/submissions
+  - average score
+- Global JSON error handling for API exceptions and validation errors
 
-## Project Structure
-- `backend/` — Spring Boot REST API
-- `frontend/` — React web app
-- `docker-compose.yml` — runs MySQL, backend, and frontend together
+## Backend API
+Base URL: `/api`
 
-## Run with Docker (recommended)
+### Dashboard
+- `GET /dashboard/stats`
 
+### Students
+- `GET /students?q=alice`
+- `POST /students`
+
+### Courses
+- `GET /courses?q=spring`
+- `POST /courses`
+
+### Enrollments
+- `GET /enrollments`
+- `POST /enrollments`
+
+### Assignments
+- `GET /assignments`
+- `GET /assignments?courseId=1`
+- `POST /assignments`
+
+### Submissions
+- `GET /submissions`
+- `GET /submissions?studentId=1`
+- `GET /submissions?assignmentId=1`
+- `POST /submissions` (upsert behavior by assignment+student)
+
+## Run with Docker
 ```bash
 docker compose up --build
 ```
 
-Then open:
+Services:
 - Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8080/api`
+- Backend: `http://localhost:8080/api`
+- MySQL: `localhost:3306`
 
-## Run Locally Without Docker
-
-### 1) Start MySQL
-Ensure a local MySQL is running and create credentials:
+## Run Locally
+1) Start MySQL with database/credentials:
 - database: `lms_db`
 - username: `lms_user`
 - password: `lms_pass`
 
-### 2) Start Backend
+2) Start backend:
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-### 3) Start Frontend
+3) Start frontend:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend development URL: `http://localhost:5173`
-
-## API Endpoints
-
-### Students
-- `GET /api/students`
-- `POST /api/students`
-
-Payload:
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com"
-}
-```
-
-### Courses
-- `GET /api/courses`
-- `POST /api/courses`
-
-Payload:
-```json
-{
-  "title": "Databases 101",
-  "description": "Intro to relational DBs",
-  "instructor": "Prof. Lee"
-}
-```
-
-### Enrollments
-- `GET /api/enrollments`
-- `POST /api/enrollments`
-
-Payload:
-```json
-{
-  "studentId": 1,
-  "courseId": 1
-}
-```
+## Seed Data
+App startup seeds demo records for:
+- students
+- courses
+- enrollments
+- assignment
+- sample submission
 
 ## Notes
 - CORS is configured for `http://localhost:5173`.
-- Backend schema is auto-managed via JPA (`ddl-auto=update`).
+- `spring.jpa.hibernate.ddl-auto=update` is enabled for quick iteration.

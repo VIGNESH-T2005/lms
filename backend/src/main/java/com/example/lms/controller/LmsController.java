@@ -1,11 +1,6 @@
 package com.example.lms.controller;
 
-import com.example.lms.dto.CourseRequest;
-import com.example.lms.dto.EnrollmentRequest;
-import com.example.lms.dto.EnrollmentResponse;
-import com.example.lms.dto.StudentRequest;
-import com.example.lms.model.Course;
-import com.example.lms.model.Student;
+import com.example.lms.dto.*;
 import com.example.lms.service.LmsService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,25 +17,30 @@ public class LmsController {
         this.lmsService = lmsService;
     }
 
+    @GetMapping("/dashboard/stats")
+    public DashboardStatsResponse getDashboardStats() {
+        return lmsService.getDashboardStats();
+    }
+
     @GetMapping("/students")
-    public List<Student> getStudents() {
-        return lmsService.getStudents();
+    public List<StudentResponse> getStudents(@RequestParam(required = false) String q) {
+        return lmsService.getStudents(q);
     }
 
     @PostMapping("/students")
     @ResponseStatus(HttpStatus.CREATED)
-    public Student createStudent(@Valid @RequestBody StudentRequest request) {
+    public StudentResponse createStudent(@Valid @RequestBody StudentRequest request) {
         return lmsService.createStudent(request);
     }
 
     @GetMapping("/courses")
-    public List<Course> getCourses() {
-        return lmsService.getCourses();
+    public List<CourseResponse> getCourses(@RequestParam(required = false) String q) {
+        return lmsService.getCourses(q);
     }
 
     @PostMapping("/courses")
     @ResponseStatus(HttpStatus.CREATED)
-    public Course createCourse(@Valid @RequestBody CourseRequest request) {
+    public CourseResponse createCourse(@Valid @RequestBody CourseRequest request) {
         return lmsService.createCourse(request);
     }
 
@@ -53,5 +53,30 @@ public class LmsController {
     @ResponseStatus(HttpStatus.CREATED)
     public EnrollmentResponse createEnrollment(@Valid @RequestBody EnrollmentRequest request) {
         return lmsService.enroll(request.studentId(), request.courseId());
+    }
+
+    @GetMapping("/assignments")
+    public List<AssignmentResponse> getAssignments(@RequestParam(required = false) Long courseId) {
+        return lmsService.getAssignments(courseId);
+    }
+
+    @PostMapping("/assignments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AssignmentResponse createAssignment(@Valid @RequestBody AssignmentRequest request) {
+        return lmsService.createAssignment(request);
+    }
+
+    @GetMapping("/submissions")
+    public List<SubmissionResponse> getSubmissions(
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) Long assignmentId
+    ) {
+        return lmsService.getSubmissions(studentId, assignmentId);
+    }
+
+    @PostMapping("/submissions")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SubmissionResponse createSubmission(@Valid @RequestBody SubmissionRequest request) {
+        return lmsService.createOrUpdateSubmission(request);
     }
 }
